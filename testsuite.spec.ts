@@ -4,7 +4,7 @@ import {test, str2mbl$, mbl2str$, expect} from './testsuite';
 export function testTests() {
 
   test('General Expectation Tests', function() {
-    test('expect().toBe()', function() {
+    test('expect(value).toBe(value)', function() {
       expect(1).toBe(1);
       expect('a').toBe('a');
       expect(null).toBe(null);
@@ -15,7 +15,7 @@ export function testTests() {
       expect(true).not.toBe(false);
     });
 
-    test('expect().toEqual()', function() {
+    test('expect(value).toEqual(value)', function() {
       expect(1).toEqual(1);
       expect('a').toEqual('a');
       expect(null).toEqual(null);
@@ -28,23 +28,35 @@ export function testTests() {
       expect([1, 2, 3]).not.toEqual([9, 2, 3]);
     });
 
-    test('expect().toMarble', function() {
-      test('empty', () => expect(mbl2str$('-|')).toMarble('-|'));
-      test('empty', () => expect(mbl2str$('-1|')).toMarble('-1|'));
-      test('empty', () => expect(mbl2str$('-1-2|')).toMarble('-1-2|'));
-      test('empty', () => expect(mbl2str$('-|')).not.toMarble('-0|'));
-      test('empty', () => expect(mbl2str$('-1|')).not.toMarble('-0-1|'));
-      test('empty', () => expect(mbl2str$('-1-2|')).not.toMarble('-0-1-2|'));
+    test('expect(stream).toMarble(string)', function() {
+      expect(Observable.from([])).toMarble('-|');
+      expect(Observable.from([1])).toMarble('-1|');
+      expect(Observable.from([1, 2])).toMarble('-1-2|');
+      expect(Observable.from([])).not.toMarble('-0|');
+      expect(Observable.from([1])).not.toMarble('-0-1|');
+      expect(Observable.from([1, 2])).not.toMarble('-0-1-2|');
+    });
+
+    test('expect(stream-of-value).toBeStreamOf(value)', function() {
+      expect(Observable.empty()).toBeStreamOf(0);
+      expect(Observable.of(0)).toBeStreamOf(0);
+      expect(Observable.of(undefined)).toBeStreamOf(undefined);
+      expect(Observable.of('here')).toBeStreamOf('here');
+      expect(Observable.of(false)).toBeStreamOf(false);
+      expect(Observable.of(NaN)).not.toBeStreamOf(NaN);
+      expect(Observable.of(undefined)).not.toBeStreamOf(NaN);
+      expect(Observable.of('here')).not.toBeStreamOf(NaN);
+      expect(Observable.of(false)).not.toBeStreamOf(true);
     });
   });
 
   test('Stream Utility Functions', function() {
     test('str2mbl$', function () {
-      test('empty', () => assertStr2mbl([], '-|'));
-      test('empty', () => assertStr2mbl([1], '-1|'));
-      test('empty', () => assertStr2mbl(['1'], '-1|'));
-      test('empty', () => assertStr2mbl([1, 2], '-1-2|'));
-      test('empty', () => assertStr2mbl([1, 2, 3], '-1-2-3|'));
+      assertStr2mbl([], '-|');
+      assertStr2mbl([1], '-1|');
+      assertStr2mbl(['1'], '-1|');
+      assertStr2mbl([1, 2], '-1-2|');
+      assertStr2mbl([1, 2, 3], '-1-2-3|');
 
       function assertStr2mbl(obs, expected) {
         const obs$ = Observable.from(obs);
@@ -57,10 +69,10 @@ export function testTests() {
 
     test('str2mbl$ using Observable.from', function () {
       test('empty', () => assertStr2mbl([], '-|'));
-      test('empty', () => assertStr2mbl([1], '-1|'));
-      test('empty', () => assertStr2mbl(['1'], '-1|'));
-      test('empty', () => assertStr2mbl([1, 2], '-1-2|'));
-      test('empty', () => assertStr2mbl([1, 2, 3], '-1-2-3|'));
+      test('singleton', () => assertStr2mbl([1], '-1|'));
+      test('string', () => assertStr2mbl(['1'], '-1|'));
+      test('doubleton', () => assertStr2mbl([1, 2], '-1-2|'));
+      test('tripleton', () => assertStr2mbl([1, 2, 3], '-1-2-3|'));
 
       function assertStr2mbl(obs, expected) {
         const obs$ = Observable.from(obs);
@@ -85,5 +97,4 @@ export function testTests() {
       }
     });
   });
-
 };

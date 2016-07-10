@@ -37,10 +37,12 @@ export function expect(actual) {
     toBe: expected => assertIdentical(expected, actual),
     toEqual: expected => assertEqual(expected, actual),
     toMarble: expected => assertMarble(expected, actual),
+    toBeStreamOf: expected => assertStreamOf(expected, actual),
     not: {
       toBe: expected => assertIdentical(expected, actual, true),
       toEqual: expected => assertEqual(expected, actual, true),
       toMarble: expected => assertMarble(expected, actual, true),
+      toBeStreamOf: expected => assertStreamOf(expected, actual, true),
     }
   };
 }
@@ -107,6 +109,31 @@ export function assertMarble(
       }
     },
     err => {
+      console.error('Error:', err);
+      data.error++;
+    }
+  );
+}
+
+export function assertStreamOf(
+  expected, stream$: Observable<any>, negated = false
+) {
+  if (!stream$) { throw('stream is not defined'); };
+  if (typeof stream$.subscribe !== 'function') {
+    throw('%s is not a stream', typeof stream$);
+  }
+  stream$.subscribe(
+    actual => {
+      data.run++;
+      if (expected === actual) {
+        markPass1('%cstream contains expected value %o', expected, negated);
+      } else {
+        markPass2('%cstream contained %o, NOT the expected value %o',
+         actual, expected, !negated);
+      }
+    },
+    err => {
+      data.run++;
       console.error('Error:', err);
       data.error++;
     }
