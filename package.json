@@ -34,7 +34,7 @@
     "webpack-validator": "^2.2.2"
   },
   "scripts": {
-    "install": "npm install && typings intall && npm run validate",
+    "postinstall": "typings install && npm run validate",
     "prestart": "npm run clean-and-copy",
     "start": "webpack-dev-server --env.dev --content-base dist --inline --hot",
     "prebuild": "npm run clean-and-copy",
