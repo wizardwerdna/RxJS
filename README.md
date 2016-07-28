@@ -62,3 +62,16 @@ mbl2str$(marble_diagram)
 
 This returns a stream corresponding to the ASCII marble diagram.  The stream is treated synchronously, giving no meaning to each '-', except as a separator of
 the elements presented.  Thus `mbl2str$('--a-b--c--|')` is the same stream as `mbl2str$('-a-b-c|')`;
+
+```typescript
+assertMVIComponent(compnent)
+```
+
+This executes a predetermined suite of tests to confirm that the identified function implements
+the MVI Protocol, as defined in [André Staltz' article](http://staltz.com/unidirectional-user-interface-architectures.html).
+Essentially, the tests assure that three functions, model, view and intent are provided, implementing the functionality
+as set forth there.  The component must be defined with three parameters for those functions, hence in the form:
+
+`main(sources, model = modelFn, view = viewFn, intent = intentFn)`
+
+As a matter of convenience, the three functions can be independently unit tested.
