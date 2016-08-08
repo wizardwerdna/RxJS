@@ -182,9 +182,9 @@ export function mbl2str$(mbl: string): O<any> {
 // May be implemented as MVI, or as a Web Component. Is optional to use in a View.
 
 export function assertMVIComponent(Component) {
-  const nullModel = (action$) => O.empty();
-  const nullView = (model$) => O.empty();
-  const nullIntent = (DOMSource) => O.empty();
+  const nullModel = (action$, ...rest) => O.of([]);
+  const nullView = (model$, ...rest) => O.empty();
+  const nullIntent = (DOMSource, ...rest) => O.of({});
 
   return function() {
 
@@ -195,9 +195,9 @@ export function assertMVIComponent(Component) {
         intent: 0
       };
       Component({}, model, view, intent);
-      function model() { visits.model++; }
-      function view() { visits.view++; }
-      function intent() { visits.intent++; }
+      function model() { visits.model++; return O.of([]); }
+      function view() { visits.view++; return O.empty(); }
+      function intent() { visits.intent++; return O.empty(); }
       expect(visits).toEqual({model: 1, view: 1, intent: 1});
     });
 
@@ -211,6 +211,7 @@ export function assertMVIComponent(Component) {
       function intent(DOMSource, ...rest) {
         const rollButton$ = DOMSource.select('.foo').events('click');
         expect(rollButton$.map(evt => evt.target.innerHTML)).toBeStreamOf('123');
+        return O.empty();
       }
     });
 
